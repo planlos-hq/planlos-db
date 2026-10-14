@@ -1,0 +1,35 @@
+pipeline {
+  agent any
+  environment {
+    COMPOSE_PROJECT_NAME = "planlos-db-release"
+    CONTAINER_NAME       = "planlos-db-release"
+    IMAGE_TAG            = "release"
+    PLANLOS_NETWORK      = "planlos-network"
+    DB_PORT              = "8003"
+    POSTGRES_PASSWORD    = credentials('planlos_db_password')
+  }
+  stages {
+    stage('Checkout') {
+      steps {
+        checkout scm
+      }
+    }
+
+    stage('Build image') {
+      steps {
+        sh 'docker compose build'
+      }
+    }
+
+    stage('Release') {
+      when {
+        expression {
+          env.GIT_BRANCH == 'origin/release'
+        }
+      }
+      steps {
+        sh 'docker compose up -d --remove-orphans'
+      }
+    }
+  }
+}

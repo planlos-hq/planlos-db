@@ -1,0 +1,31 @@
+# Standalone PlanLos PostgreSQL database.
+# Configure via .env (see .env.example), then: docker compose up -d --build
+# Creates the network planlos-server joins (PLANLOS_NETWORK, default "planlos-network").
+services:
+  db:
+    image: localhost/planlos-db:${IMAGE_TAG:-latest}
+    container_name: ${CONTAINER_NAME:-planlos-db}
+    build: .
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      TZ: ${TZ:-Europe/Berlin}
+    networks:
+      default:
+        aliases: [planlos-db] # host name used by planlos-server
+    ports:
+      - "127.0.0.1:${DB_PORT:-8003}:5432"
+    volumes:
+      - db-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+networks:
+  default:
+    name: ${PLANLOS_NETWORK:-planlos-network}
+
+volumes:
+  db-data:

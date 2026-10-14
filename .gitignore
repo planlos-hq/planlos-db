@@ -1,0 +1,12 @@
+# Secrets
+.env
+
+# Nix / direnv
+.direnv
+result
+
+# Editors / OS
+.vscode
+.idea
+*.swp
+.DS_Store
