@@ -31,8 +31,10 @@ Migrationen ein und migriert beim Start selbst.
 
 Neue Version anlegen:
 
-1. `migrations/<n+1>/up.sql` (beginnt mit `insert into schema_version_history`)
-   und das vollständige `schema.sql` schreiben.
+1. `migrations/<n+1>/up.sql` und das vollständige `schema.sql` schreiben. Die
+   Version trägt planlos-server beim Migrieren selbst in
+   `schema_version_history` ein, `up.sql` darf das nicht tun. Nur `schema.sql`
+   fügt seine eigene Version ein (für neue Datenbanken).
 2. `COPY` im [`Dockerfile`](Dockerfile) auf die neue Version setzen.
 3. `./format_sql.sh` ausführen (pgFormatter; mit Nix: `direnv allow` bzw.
    `nix develop`).
